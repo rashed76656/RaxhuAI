@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rashed Mahmud — AI Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="components/logo.svg">
+  <meta name="description"
+    content="Interactive AI chatbot-style portfolio of Md Rashed Mahmud — Vibe Coder, Prompt Engineer, and aspiring Cybersecurity Expert.">
+  <meta name="keywords" content="Rashed Mahmud, portfolio, AI, vibe coder, cybersecurity, web developer">
+  <meta name="author" content="Md Rashed Mahmud">
+  <meta name="theme-color" content="#6C63FF">
+  <meta property="og:title" content="Rashed Mahmud — AI Portfolio">
+  <meta property="og:description" content="Chat with Rashed's AI assistant to explore his skills, projects, and more!">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- FontAwesome for brand icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/character.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+  <!-- Aurora Background -->
+  <div class="aurora-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
+
+  <!-- Effect overlays -->
+  <canvas id="confetti-canvas"></canvas>
+  <canvas id="matrix-canvas"></canvas>
+  <div id="hearts-container"></div>
+  <div id="fireworks-container"></div>
+  <div id="effect-overlay" class="effect-overlay"></div>
+
+  <!-- ===== APP ===== -->
+  <div class="app-container">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="components/logo.png" alt="RaxhuAI Logo" class="sidebar-logo-img">
+          <span class="sidebar-logo-text">RaxhuAI</span>
+        </div>
+        <div class="sidebar-controls">
+          <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="Toggle Sidebar">
+            <i data-lucide="chevron-left"></i>
+          </button>
+          <button class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close sidebar">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="new-chat-btn" id="new-chat-btn">
+        <i data-lucide="plus" style="width:18px;height:18px"></i>
+        <span>New Chat</span>
+      </button>
+
+      <div class="sidebar-content">
+        <!-- Pinned Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">
+            <i data-lucide="pin" style="width:14px;height:14px"></i>
+            <span>Pinned</span>
+          </div>
+          <div class="sidebar-item" data-command="about">
+            <span class="sidebar-item-icon"><i data-lucide="user" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">About Rashed</span>
+          </div>
+          <div class="sidebar-item" data-command="skills">
+            <span class="sidebar-item-icon"><i data-lucide="zap" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Skills & Expertise</span>
+          </div>
+          <div class="sidebar-item" data-command="show projects">
+            <span class="sidebar-item-icon"><i data-lucide="folder-open" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Projects</span>
+            <span class="sidebar-item-badge">6</span>
+          </div>
+          <div class="sidebar-item" data-command="contact">
+            <span class="sidebar-item-icon"><i data-lucide="mail" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Contact Me</span>
+          </div>
+          <div class="sidebar-item" data-command="education">
+            <span class="sidebar-item-icon"><i data-lucide="graduation-cap" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Education</span>
+          </div>
+          <div class="sidebar-item" data-command="achievements">
+            <span class="sidebar-item-icon"><i data-lucide="award" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Achievements</span>
+          </div>
+          <div class="sidebar-item" data-command="download cv">
+            <span class="sidebar-item-icon"><i data-lucide="file-text" style="width:16px;height:16px"></i></span>
+            <span class="sidebar-item-text">Download CV</span>
+          </div>
+        </div>
+
+        <!-- Recent Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">
+            <i data-lucide="clock" style="width:14px;height:14px"></i>
+            <span>Recent</span>
+          </div>
+          <div id="recent-chats">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-socials">
+          <a href="https://github.com/Rashed76656" class="sidebar-social-link" data-tooltip="GitHub" target="_blank">
+            <i class="fa-brands fa-github" style="font-size:18px"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/rashed-mahmud-959262263/" class="sidebar-social-link"
+            data-tooltip="LinkedIn" target="_blank">
+            <i class="fa-brands fa-linkedin" style="font-size:18px"></i>
+          </a>
+          <a href="https://www.facebook.com/unavailable.1111111111" class="sidebar-social-link" data-tooltip="Facebook"
+            target="_blank">
+            <i class="fa-brands fa-facebook" style="font-size:18px"></i>
+          </a>
+          <a href="mailto:rashu76656@proton.me" class="sidebar-social-link" data-tooltip="Email" target="_blank">
+            <i class="fa-solid fa-envelope" style="font-size:18px"></i>
+          </a>
+        </div>
+
+        <div class="dark-mode-toggle" id="dark-mode-toggle">
+          <i data-lucide="moon" style="width:18px;height:18px"></i>
+          <span>Dark Mode</span>
+          <div class="toggle-switch"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+      <!-- Mobile Header -->
+      <header class="mobile-header">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+          <i data-lucide="menu" style="width:22px;height:22px"></i>
+        </button>
+        <span class="mobile-header-title">RaxhuAI</span>
+        <button class="mobile-menu-btn" style="visibility:hidden">
+          <i data-lucide="menu" style="width:22px;height:22px"></i>
+        </button>
+      </header>
+
+      <!-- Chat Area -->
+      <div class="chat-area" id="chat-area">
+
+        <!-- Welcome State (Empty) -->
+        <div class="welcome-state" id="welcome-state">
+          <div class="character-welcome">
+            <div class="character-container">
+              <div class="character-glow"></div>
+              <img id="character-welcome-img" class="character-img" src="components/animation/waving.gif"
+                alt="Rashed's AI Character">
+              <div class="zzz-container" style="display:none">
+                <span class="zzz">Z</span>
+                <span class="zzz">z</span>
+                <span class="zzz">z</span>
+              </div>
+              <div class="reaction-bubble"></div>
+            </div>
+            <div class="character-status">
+              <span class="status-dot"></span>
+              <span>Online</span>
+            </div>
+            <span class="character-expression">👋 Hello!</span>
+          </div>
+
+          <h1 class="welcome-title">
+            Ask <span class="welcome-title-gradient">Rashed</span> Anything
+          </h1>
+          <p class="welcome-subtitle">
+            Hi! I'm Rashed's AI portfolio assistant. Ask me about his skills, projects, experience — or try some secret
+            commands! ✨
+          </p>
+
+          <div class="welcome-suggestions">
+            <button class="suggestion-chip" data-command="about">
+              <i data-lucide="user" style="width:16px;height:16px"></i>
+              Who is Rashed?
+            </button>
+            <button class="suggestion-chip" data-command="skills">
+              <i data-lucide="zap" style="width:16px;height:16px"></i>
+              Show me your skills
+            </button>
+            <button class="suggestion-chip" data-command="show projects">
+              <i data-lucide="folder-open" style="width:16px;height:16px"></i>
+              View projects
+            </button>
+            <button class="suggestion-chip" data-command="contact">
+              <i data-lucide="mail" style="width:16px;height:16px"></i>
+              How to contact?
+            </button>
+            <button class="suggestion-chip" data-command="help">
+              <i data-lucide="help-circle" style="width:16px;height:16px"></i>
+              What can I ask?
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" id="messages-container">
+          <!-- Typing Indicator -->
+          <div id="typing-indicator" class="typing-indicator message message-bot">
+            <div class="message-avatar">R</div>
+            <div class="message-content">
+              <div class="message-bubble">
+                <div class="typing-dots">
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                </div>
+                <span class="typing-text">Rashed is thinking...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <!-- Command Chips -->
+        <div class="command-chips" id="command-chips">
+          <button class="command-chip" data-command="about">About</button>
+          <button class="command-chip" data-command="skills">Skills</button>
+          <button class="command-chip" data-command="show projects">Projects</button>
+          <button class="command-chip" data-command="contact">Contact</button>
+          <button class="command-chip" data-command="download cv">CV</button>
+          <button class="command-chip" data-command="help">Help</button>
+        </div>
+
+        <!-- Input -->
+        <div class="input-container">
+          <textarea id="chat-input" class="chat-input" placeholder="Ask Rashed anything..." rows="1"
+            aria-label="Chat input"></textarea>
+          <button class="send-btn" id="send-btn" aria-label="Send message">
+            <i data-lucide="send" style="width:18px;height:18px"></i>
+          </button>
+        </div>
+
+        <div class="input-footer">
+          <i data-lucide="sparkles" style="width:12px;height:12px"></i>
+          <span>Powered by RaxhuAI — Try secret commands for surprises!</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Character (visible in chat mode) -->
+    <div class="character-floating" id="character-floating">
+      <div class="character-frame">
+        <div class="character-container">
+          <div class="character-glow"></div>
+          <img id="character-floating-img" class="character-img" src="components/animation/idle.gif"
+            alt="Rashed's AI Character">
+          <div class="zzz-container" style="display:none">
+            <span class="zzz">Z</span>
+            <span class="zzz">z</span>
+            <span class="zzz">z</span>
+          </div>
+          <div class="reaction-bubble"></div>
+        </div>
+      </div>
+      <span class="character-expression">😌 Chilling...</span>
+    </div>
+  </div>
+
+  <!-- JS (order matters) -->
+  <script src="js/utils.js"></script>
+  <script src="js/commands.js"></script>
+  <script src="js/banglish-commands.js"></script>
+  <script src="js/animation-controller.js"></script>
+  <script src="js/chat-engine.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/easter-eggs.js"></script>
+  <script src="js/draggable.js"></script>
+  <script src="js/character-reactions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
