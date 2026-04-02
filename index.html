@@ -25,15 +25,85 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
+  <!-- Critical animation preloads -->
+  <link rel="preload" as="video" href="components/webm/idle.webm" type="video/webm">
+  <link rel="preload" as="video" href="components/webm/waving.webm" type="video/webm">
+  <link rel="preload" as="video" href="components/webm/talking.webm" type="video/webm">
+  <link rel="preload" as="video" href="components/webm/thinking.webm" type="video/webm">
+  <link rel="preload" as="image" href="components/animation/idle.gif" type="image/gif">
+  <link rel="preload" as="image" href="components/animation/waving.gif" type="image/gif">
+
   <!-- CSS -->
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/sidebar.css">
   <link rel="stylesheet" href="css/chat.css">
   <link rel="stylesheet" href="css/character.css">
+  <link rel="stylesheet" href="css/loading.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
+
+  <!-- Cinematic Loader -->
+  <div id="loader" aria-live="polite" aria-label="Loading RaxhuAI">
+    <div class="loader-grid"></div>
+    <canvas id="loader-particles"></canvas>
+
+    <span class="loader-corner loader-corner-tl"></span>
+    <span class="loader-corner loader-corner-tr"></span>
+    <span class="loader-corner loader-corner-bl"></span>
+    <span class="loader-corner loader-corner-br"></span>
+
+    <div class="loader-split-top"></div>
+    <div class="loader-split-bottom"></div>
+
+    <div class="loader-actions">
+      <button id="loader-sound-btn" type="button" aria-pressed="false">Sound: Off</button>
+      <button id="loader-skip-btn" type="button">Skip</button>
+    </div>
+
+    <div class="loader-center" id="loader-center">
+      <div class="loader-logo-wrap">
+        <img src="components/logo.png" alt="RaxhuAI" class="loader-logo">
+        <span class="loader-ring"></span>
+      </div>
+
+      <h1 class="loader-title" id="loader-title">
+        <span class="loader-letter" data-letter="R">R</span>
+        <span class="loader-letter" data-letter="A">A</span>
+        <span class="loader-letter" data-letter="X">X</span>
+        <span class="loader-letter" data-letter="H">H</span>
+        <span class="loader-letter" data-letter="U">U</span>
+        <span class="loader-space"> </span>
+        <span class="loader-letter ai" data-letter="A">A</span>
+        <span class="loader-letter ai" data-letter="I">I</span>
+      </h1>
+
+      <p class="loader-tagline" id="loader-tagline">RaxhuAI experience boot hocche...</p>
+      <p class="loader-branding">Built by Md Rashed Mahmud</p>
+
+      <div class="loader-progress-wrap" id="loader-progress-wrap">
+        <div class="loader-progress-track">
+          <div class="loader-progress-fill" id="loader-progress-fill">
+            <span class="loader-progress-glow"></span>
+          </div>
+        </div>
+        <div class="loader-progress-meta">
+          <span id="loader-status">Initializing RaxhuAI...</span>
+          <span id="loader-percent">0%</span>
+        </div>
+      </div>
+
+      <p class="loader-tip" id="loader-tip">Tip: "help" likhe shob command dekho.</p>
+    </div>
+
+    <div class="loader-avatar" id="loader-avatar">
+      <video autoplay loop muted playsinline preload="auto" class="loader-avatar-media">
+        <source src="components/webm/waving.webm" type="video/webm">
+      </video>
+      <div class="loader-avatar-glow"></div>
+    </div>
+  </div>
 
   <!-- Aurora Background -->
   <div class="aurora-bg">
@@ -177,8 +247,10 @@
           <div class="character-welcome">
             <div class="character-container">
               <div class="character-glow"></div>
-              <img id="character-welcome-img" class="character-img" src="components/animation/waving.gif"
-                alt="Rashed's AI Character">
+              <video id="character-welcome-img" class="character-img" autoplay loop muted playsinline preload="auto"
+                aria-label="Rashed's AI Character">
+                <source src="components/webm/waving.webm" type="video/webm">
+              </video>
               <div class="zzz-container" style="display:none">
                 <span class="zzz">Z</span>
                 <span class="zzz">z</span>
@@ -277,8 +349,10 @@
       <div class="character-frame">
         <div class="character-container">
           <div class="character-glow"></div>
-          <img id="character-floating-img" class="character-img" src="components/animation/idle.gif"
-            alt="Rashed's AI Character">
+          <video id="character-floating-img" class="character-img" autoplay loop muted playsinline preload="auto"
+            aria-label="Rashed's AI Character">
+            <source src="components/webm/idle.webm" type="video/webm">
+          </video>
           <div class="zzz-container" style="display:none">
             <span class="zzz">Z</span>
             <span class="zzz">z</span>
@@ -295,12 +369,14 @@
   <script src="js/utils.js"></script>
   <script src="js/commands.js"></script>
   <script src="js/banglish-commands.js"></script>
+  <script src="js/command-scorer.js"></script>
   <script src="js/animation-controller.js"></script>
   <script src="js/chat-engine.js"></script>
   <script src="js/sidebar.js"></script>
   <script src="js/easter-eggs.js"></script>
   <script src="js/draggable.js"></script>
   <script src="js/character-reactions.js"></script>
+  <script src="js/loader.js"></script>
   <script src="js/app.js"></script>
 </body>
 

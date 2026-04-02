@@ -81,5 +81,15 @@ const App = {
   }
 };
 
-// Launch
-document.addEventListener('DOMContentLoaded', () => App.init());
+// Launch after loader flow (if present)
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    if (typeof LoaderManager !== 'undefined' && LoaderManager && typeof LoaderManager.start === 'function') {
+      await LoaderManager.start();
+    }
+  } catch (err) {
+    console.warn('Loader failed, continuing app init:', err);
+  }
+
+  await App.init();
+});

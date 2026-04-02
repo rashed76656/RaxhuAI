@@ -76,7 +76,7 @@ const Commands = {
     keywords: ['download cv', 'cv', 'resume', 'download resume', 'your cv', 'your resume'],
     animation: 'explaining',
     response: {
-      text: `Here's my CV/Resume! Click below to download: 📄\n\n<em>Note: CV file will be added soon. Stay tuned!</em>`,
+      text: `Here's my CV/Resume! Click below to download: 📄\n\n<em>Thanks for your interest. Feel free to reach out for collaboration or opportunities.</em>`,
       showDownload: true
     }
   },
@@ -107,7 +107,7 @@ const Commands = {
 
   // ===== HELLO / GREETING =====
   hello: {
-    keywords: ['hello', 'hi', 'hey', 'howdy', 'greetings', 'good morning', 'good evening', 'good afternoon', 'assalamualaikum', 'salam'],
+    keywords: ['hello', 'hi', 'hey', 'howdy', 'greetings', 'good morning', 'good evening', 'good afternoon', 'assalamualaikum', 'salam', 'how are you', 'how are u', 'how r you', 'how r u', 'how are things', 'hows it going', "how's it going", 'whats up', "what's up", 'sup', 'yo'],
     animation: 'waving',
     response: {
       text: null // Will be dynamic based on time
@@ -160,8 +160,8 @@ const Commands = {
   }
 };
 
-// Dynamic greeting based on time
-function getGreeting(visitorName) {
+// Dynamic greeting based on time and user message context
+function getGreeting(visitorName, userInput = '') {
   const hour = new Date().getHours();
   let timeGreet;
   if (hour >= 5 && hour < 12) timeGreet = 'Good morning';
@@ -170,12 +170,36 @@ function getGreeting(visitorName) {
   else timeGreet = 'Hey there, night owl';
 
   const name = visitorName ? `, ${visitorName}` : '';
-  const greetings = [
-    `${timeGreet}${name}! 👋 Welcome to my portfolio! How can I help you today?`,
-    `${timeGreet}${name}! 😊 Great to see you here! Ask me anything about Rashed!`,
-    `${timeGreet}${name}! ✨ I'm Rashed's AI assistant. What would you like to know?`
+  const lower = (userInput || '').toLowerCase();
+  const askedHealth = /how\s*(are|r)\s*(you|u)|how'?s\s*it\s*going|what'?s\s*up|sup/.test(lower);
+
+  const genericGreetings = [
+    `${timeGreet}${name}! 👋 Welcome to my portfolio! What do you want to explore first?`,
+    `${timeGreet}${name}! 😊 Great to see you here. Ask me anything about Rashed!`,
+    `${timeGreet}${name}! ✨ I'm Rashed's AI assistant. What would you like to know today?`,
+    `${timeGreet}${name}! 🚀 Ready to dive into skills, projects, or secret commands?`,
+    `${timeGreet}${name}! 💡 Want a quick tour? Try typing <strong>about</strong> or <strong>projects</strong>.`,
+    `${timeGreet}${name}! 😄 You just entered RaxhuAI zone. What's the mission today?`,
+    `${timeGreet}${name}! 🔥 Need portfolio info or a fun easter egg? I can do both.`,
+    `${timeGreet}${name}! 🌟 Always happy to chat. Ask me about work, skills, or contact.`,
+    `${timeGreet}${name}! 🤝 Let's make this useful. What are you curious about?`,
+    `${timeGreet}${name}! 🎯 Quick start: type <strong>help</strong> and I'll show all options.`
   ];
-  return Utils.randomFrom(greetings);
+
+  const healthReplies = [
+    `I'm doing awesome${name}! 😄 Running smooth and ready to help you explore everything here!`,
+    `All good here${name}! ⚡ Powered up and waiting for your next command.`,
+    `Doing great${name}! 🙌 Thanks for asking. What should we check next — <strong>skills</strong> or <strong>projects</strong>?`,
+    `I'm fantastic${name}! 🚀 Portfolio engine is stable and vibes are high.`,
+    `Feeling sharp${name}! 😎 Want me to show you something cool? Try <strong>secret</strong>.`,
+    `Ami bhalo achi${name}! 😄 Tumi kemon? Let's explore Rashed's work together!`,
+    `Super charged${name}! 🔋 Ask me anything and I'll guide you.`,
+    `Pretty great${name}! ✨ I'm here, online, and ready for your questions.`,
+    `No bugs, only vibes${name}! 😄 What do you want to know first?`,
+    `Doing brilliant${name}! 🎉 Let's make this chat productive and fun.`
+  ];
+
+  return Utils.randomFrom(askedHealth ? healthReplies : genericGreetings);
 }
 
 // Secret commands (Easter eggs)

@@ -428,6 +428,10 @@
   justify-content: center;
 }
 
+.sidebar.collapsed .sidebar-socials {
+  display: none;
+}
+
 .sidebar.collapsed .toggle-switch {
   display: none;
 }

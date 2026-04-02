@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Md Rashed Mahmud | CV</title>
+	<meta name="description" content="Professional CV of Md Rashed Mahmud">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<div class="bg-orb orb-a"></div>
+	<div class="bg-orb orb-b"></div>
+
+	<header class="topbar">
+		<a class="back-link" href="../../index.html" aria-label="Back to portfolio">Back to Portfolio</a>
+		<div class="topbar-actions">
+			<button class="btn ghost" id="theme-toggle" type="button">Toggle Theme</button>
+			<button class="btn primary" id="print-btn" type="button">Download PDF</button>
+		</div>
+	</header>
+
+	<main class="cv-shell">
+		<section class="hero card reveal">
+			<div class="hero-left">
+				<p class="kicker">Curriculum Vitae</p>
+				<h1>Md Rashed Mahmud</h1>
+				<p class="role">Vibe Coder, Prompt Engineer, Aspiring Cybersecurity Expert</p>
+				<div class="contact-grid">
+					<a href="mailto:rashu76656@proton.me">rashu76656@proton.me</a>
+					<a href="https://github.com/Rashed76656" target="_blank" rel="noopener noreferrer">github.com/Rashed76656</a>
+					<a href="https://www.linkedin.com/in/rashed-mahmud-959262263/" target="_blank" rel="noopener noreferrer">linkedin.com/in/rashed-mahmud-959262263</a>
+					<span>Bangladesh</span>
+				</div>
+			</div>
+			<div class="hero-right">
+				<div class="photo-wrap">
+					<img src="profile.png" alt="Profile photo of Md Rashed Mahmud" onerror="this.style.display='none'; this.parentElement.classList.add('empty-photo');">
+					<span class="photo-placeholder">Add Your Profile Photo</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="layout">
+			<article class="main-column">
+				<section class="card reveal">
+					<h2>Professional Summary</h2>
+					<p>
+						Creative developer building interactive web experiences with AI-assisted workflows, command-driven UI,
+						and expressive animation systems. Focused on practical products today and long-term growth toward
+						professional cybersecurity excellence.
+					</p>
+				</section>
+
+				<section class="card reveal">
+					<h2>Featured Projects</h2>
+					<div class="project-list">
+						<div class="project-item">
+							<h3>SuperMath Arena</h3>
+							<p>Competitive math battle game designed for speed and challenge.</p>
+						</div>
+						<div class="project-item">
+							<h3>Readme Craft</h3>
+							<p>Utility tool to design and generate polished GitHub README files.</p>
+						</div>
+						<div class="project-item">
+							<h3>Chowdhury House</h3>
+							<p>Digital mess management app to track meals, costs, and shared resources.</p>
+						</div>
+						<div class="project-item">
+							<h3>Alya Portfolio</h3>
+							<p>Creative interactive portfolio experience with strong visual identity.</p>
+						</div>
+						<div class="project-item">
+							<h3>TradeGamee</h3>
+							<p>Trading simulation platform for learning through gameplay.</p>
+						</div>
+						<div class="project-item">
+							<h3>Endless Runner 3D</h3>
+							<p>Fast-paced 3D runner game built with modern web techniques.</p>
+						</div>
+					</div>
+				</section>
+			</article>
+
+			<aside class="side-column">
+				<section class="card reveal">
+					<h2>Education</h2>
+					<p class="item-title">Diploma in Computer Science &amp; Technology</p>
+					<p>Rangpur Polytechnic Institute</p>
+					<p class="muted">Currently Studying</p>
+				</section>
+
+				<section class="card reveal">
+					<h2>Core Skills</h2>
+					<div class="chips">
+						<span>Vibe Coding</span>
+						<span>Prompt Engineering</span>
+						<span>HTML</span>
+						<span>CSS</span>
+						<span>JavaScript</span>
+						<span>UI Animation</span>
+						<span>3D Web Design</span>
+						<span>Cybersecurity Learning</span>
+					</div>
+				</section>
+
+				<section class="card reveal">
+					<h2>Career Focus</h2>
+					<ul>
+						<li>Build high-impact interactive web products</li>
+						<li>Master ethical hacking and security fundamentals</li>
+						<li>Grow into a professional cybersecurity expert</li>
+					</ul>
+				</section>
+			</aside>
+		</section>
+	</main>
+
+	<footer class="cv-footer">
+		<span>Last updated: <strong id="cv-date">April 2026</strong></span>
+	</footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="script.js"></script>
+</body>
+
+</html>

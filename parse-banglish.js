@@ -16,7 +16,7 @@ const tableRegex = /\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*"([^"]+)"\s*\|\s*"([^
 let match;
 while ((match = tableRegex.exec(md)) !== null) {
   const cmd = match[1].toLowerCase().trim();
-  const expression = match[2];
+  const expression = match[2] === 'boss' ? 'boss-mood' : match[2];
   const reply = match[3];
   const speech = match[4];
   
@@ -37,7 +37,7 @@ const hiddenRegex = /"([^"]+)":\s*\(\)=>\{\s*setChar\('([^']+)',(\d+)\);\s*showS
 
 while ((match = hiddenRegex.exec(md)) !== null) {
   const word = match[1].toLowerCase();
-  const anim = match[2];
+  const anim = match[2] === 'boss' ? 'boss-mood' : match[2];
   const duration = match[3];
   const speechText = match[4];
   

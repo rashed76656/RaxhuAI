@@ -6,6 +6,25 @@ const ChatEngine = {
   messages: [],
   isProcessing: false,
   visitorName: null,
+  repeatToleranceByCommand: {
+    hello: 5,
+    help: 4,
+    about: 3,
+    skills: 3,
+    projects: 3,
+    contact: 3,
+    education: 3,
+    achievements: 3,
+    downloadCv: 4,
+    game: 4,
+    hackTalk: 3,
+    secret: 2,
+    default: 3
+  },
+  repeatCommandTracker: {
+    lastCommandKey: '',
+    count: 0
+  },
 
   // DOM elements (cached)
   els: {},
@@ -73,6 +92,76 @@ const ChatEngine = {
     const input = this.els.chatInput;
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  },
+
+  detectCommandKey(inputRaw, lowerInput) {
+    if (!lowerInput) return null;
+
+    if (typeof SecretCommands !== 'undefined' && SecretCommands[lowerInput]) {
+      return 'secret';
+    }
+
+    if (typeof CommandScorer !== 'undefined') {
+      const ranked = CommandScorer.rankCommands(inputRaw, Commands);
+      const best = ranked[0];
+      if (best && best.score >= CommandScorer.threshold) {
+        return best.key;
+      }
+    } else {
+      for (const [key, cmd] of Object.entries(Commands || {})) {
+        if (key === 'unknown') continue;
+        if (cmd.keywords && Utils.matchKeywords(inputRaw, cmd.keywords)) {
+          return key;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  getRepeatTolerance(commandKey) {
+    if (!commandKey) return this.repeatToleranceByCommand.default;
+    return this.repeatToleranceByCommand[commandKey] || this.repeatToleranceByCommand.default;
+  },
+
+  isKnownCommandInput(lowerInput) {
+    if (!lowerInput) return false;
+
+    if (typeof SecretCommands !== 'undefined' && SecretCommands[lowerInput]) {
+      return true;
+    }
+
+    if (typeof CommandScorer !== 'undefined') {
+      const ranked = CommandScorer.rankCommands(lowerInput, Commands);
+      const best = ranked[0];
+      return !!(best && best.score >= CommandScorer.threshold);
+    }
+
+    for (const [key, cmd] of Object.entries(Commands || {})) {
+      if (key === 'unknown') continue;
+      if (cmd.keywords && Utils.matchKeywords(lowerInput, cmd.keywords)) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  updateRepeatCommandTracker(commandKey) {
+    if (!commandKey) {
+      this.repeatCommandTracker.lastCommandKey = '';
+      this.repeatCommandTracker.count = 0;
+      return 0;
+    }
+
+    if (this.repeatCommandTracker.lastCommandKey === commandKey) {
+      this.repeatCommandTracker.count += 1;
+    } else {
+      this.repeatCommandTracker.lastCommandKey = commandKey;
+      this.repeatCommandTracker.count = 1;
+    }
+
+    return this.repeatCommandTracker.count;
   },
 
   // Send message
@@ -315,6 +404,20 @@ const ChatEngine = {
       }
     }
 
+    // Repeated same command protection (fun angry reaction)
+    const repeatCommandKey = this.detectCommandKey(input, lower);
+    const repeatCount = this.updateRepeatCommandTracker(repeatCommandKey);
+    const repeatLimit = this.getRepeatTolerance(repeatCommandKey);
+    if (repeatCommandKey && repeatCount > repeatLimit) {
+      AnimationController.setState('angry');
+      this.showTyping();
+      await Utils.delay(850);
+      this.hideTyping();
+      await this.addBotMessage(`😤 Oi oi! Same command again and again?\n\nYou used <strong>"${Utils.sanitize(lower)}"</strong> <strong>${repeatCount}</strong> times! (limit: ${repeatLimit})\nTry something new — maybe <strong>skills</strong>, <strong>projects</strong>, or <strong>secret</strong> 😄`);
+      AnimationController.setState('idle', { duration: 2500 });
+      return;
+    }
+
     // Check for spam
     if (Utils.spamDetector.check(input)) {
       AnimationController.setState('angry');
@@ -389,12 +492,28 @@ const ChatEngine = {
       }
     }
 
-    // Match commands
-    for (const [key, cmd] of Object.entries(Commands)) {
-      if (key === 'unknown') continue;
-      if (cmd.keywords && Utils.matchKeywords(input, cmd.keywords)) {
-        await this.handleCommand(key, cmd);
+    // Match normal commands using intent ranking (secrets/utility checks already handled above)
+    if (typeof CommandScorer !== 'undefined') {
+      const ranked = CommandScorer.rankCommands(input, Commands);
+      const best = ranked[0];
+
+      if (CommandScorer.shouldDebug() && ranked.length) {
+        const top = ranked.slice(0, 3).map(r => `${r.key}:${r.score.toFixed(1)}(${r.matchedKeyword || '-'})`).join(' | ');
+        console.log('%c[IntentRank]%c ' + top, 'color:#6C63FF;font-weight:700;', 'color:inherit;');
+      }
+
+      if (best && best.score >= CommandScorer.threshold) {
+        await this.handleCommand(best.key, best.cmd, input);
         return;
+      }
+    } else {
+      // Fallback if scorer script is unavailable
+      for (const [key, cmd] of Object.entries(Commands)) {
+        if (key === 'unknown') continue;
+        if (cmd.keywords && Utils.matchKeywords(input, cmd.keywords)) {
+          await this.handleCommand(key, cmd, input);
+          return;
+        }
       }
     }
 
@@ -408,7 +527,7 @@ const ChatEngine = {
   },
 
   // Handle a known command
-  async handleCommand(key, cmd) {
+  async handleCommand(key, cmd, userInput = '') {
     const anim = cmd.animation || 'talking';
     AnimationController.setState(anim, { force: true });
     AnimationController.lockState(3000);  // Let the expression animation play for 3s
@@ -421,7 +540,7 @@ const ChatEngine = {
 
     // Special case: greeting
     if (key === 'hello') {
-      mainText = getGreeting(this.visitorName);
+      mainText = getGreeting(this.visitorName, userInput);
     }
 
     // Special case: game
@@ -500,7 +619,7 @@ const ChatEngine = {
 
     // Download button
     if (resp.showDownload) {
-      extra += `<button class="download-btn" onclick="alert('CV will be added soon!')"><i data-lucide="download" style="width:16px;height:16px"></i> Download CV</button>`;
+      extra += `<a class="download-btn" href="components/cv/index.html" target="_blank" rel="noopener noreferrer"><i data-lucide="download" style="width:16px;height:16px"></i> Open CV</a>`;
     }
 
     await this.addBotMessage(mainText, extra);

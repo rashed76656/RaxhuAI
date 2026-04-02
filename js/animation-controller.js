@@ -9,29 +9,30 @@ const AnimationController = {
   isTransitioning: false,
   preloaded: new Set(),
   lockedUntil: 0,  // timestamp until which state changes are blocked
+  useWebm: false,
 
-  // GIF mapping
+  // Shared animation state names
   stateMap: {
-    'idle': 'idle.gif',
-    'thinking': 'thinking.gif',
-    'talking': 'talking.gif',
-    'explaining': 'explaining.gif',
-    'excited': 'excited.gif',
-    'waving': 'waving.gif',
-    'confused': 'confused.gif',
-    'sad': 'sad.gif',
-    'surprised': 'surprised.gif',
-    'typing': 'typing.gif',
-    'laughing': 'laughing.gif',
-    'blushing': 'blushing.gif',
-    'sleeping': 'sleeping.gif',
-    'angry': 'angry.gif',
-    'boss-mood': 'boss-mood.gif',
-    'dance': 'dance.gif',
-    'mysterious': 'mysterious.gif',
-    'hacker': 'hacker.gif',
-    'love': 'love.gif',
-    'love-kiss': 'love-kiss.gif'
+    'idle': 'idle',
+    'thinking': 'thinking',
+    'talking': 'talking',
+    'explaining': 'explaining',
+    'excited': 'excited',
+    'waving': 'waving',
+    'confused': 'confused',
+    'sad': 'sad',
+    'surprised': 'surprised',
+    'typing': 'typing',
+    'laughing': 'laughing',
+    'blushing': 'blushing',
+    'sleeping': 'sleeping',
+    'angry': 'angry',
+    'boss-mood': 'boss-mood',
+    'dance': 'dance',
+    'mysterious': 'mysterious',
+    'hacker': 'hacker',
+    'love': 'love',
+    'love-kiss': 'love-kiss'
   },
 
   // Expression labels for display
@@ -69,24 +70,107 @@ const AnimationController = {
     'excited': 'supersaiyan-mode' // only for power up
   },
 
-  // Get GIF path
+  // Keep this function for compatibility with existing callers expecting an image path
   getGifPath(state) {
-    const gif = this.stateMap[state] || 'idle.gif';
-    return `components/animation/${gif}`;
+    const baseName = this.stateMap[state] || 'idle';
+    return `components/animation/${baseName}.gif`;
+  },
+
+  getWebmPath(state) {
+    const baseName = this.stateMap[state] || 'idle';
+    return `components/webm/${baseName}.webm`;
+  },
+
+  supportsWebm() {
+    const video = document.createElement('video');
+    return !!video.canPlayType && video.canPlayType('video/webm; codecs="vp9"') !== '';
+  },
+
+  getCharacterMediaElements() {
+    return [
+      document.getElementById('character-welcome-img'),
+      document.getElementById('character-floating-img')
+    ].filter(Boolean);
+  },
+
+  replaceWithGifImage(el, state) {
+    if (!el || el.tagName !== 'VIDEO') return el;
+    const img = document.createElement('img');
+    img.id = el.id;
+    img.className = el.className;
+    img.alt = "Rashed's AI Character";
+    img.src = this.getGifPath(state);
+    el.replaceWith(img);
+
+    // Character click reactions are bound to media elements; rebind after replacing nodes.
+    if (typeof CharacterReactions !== 'undefined' && typeof CharacterReactions.attachListeners === 'function') {
+      CharacterReactions.attachListeners('.character-img');
+    }
+
+    return img;
+  },
+
+  setMediaSource(el, state) {
+    if (!el) return;
+
+    if (el.tagName === 'VIDEO') {
+      if (!this.useWebm) {
+        this.replaceWithGifImage(el, state);
+        return;
+      }
+
+      const videoSrc = this.getWebmPath(state);
+      if (el.getAttribute('src') !== videoSrc) {
+        el.setAttribute('src', videoSrc);
+        el.load();
+      }
+      const playPromise = el.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          this.replaceWithGifImage(el, state);
+        });
+      }
+      return;
+    }
+
+    el.src = this.getGifPath(state);
   },
 
   // Initialize
   init() {
-    this.preloadStates(['idle', 'thinking', 'talking', 'waving']);
+    this.useWebm = this.supportsWebm();
+
+    if (!this.useWebm) {
+      this.getCharacterMediaElements().forEach(el => {
+        const initialState = el.id === 'character-welcome-img' ? 'waving' : 'idle';
+        this.replaceWithGifImage(el, initialState);
+      });
+    }
+
+    // Preload high-frequency states immediately
+    this.preloadStates(['idle', 'waving', 'thinking', 'talking', 'typing']);
+    // Preload the rest shortly after initial paint
+    setTimeout(() => {
+      this.preloadStates(Object.keys(this.stateMap));
+    }, 200);
+
     this.startIdleTimer();
   },
 
-  // Preload GIF
+  // Preload animation assets for snappy state switching
   preloadStates(states) {
     states.forEach(state => {
       if (!this.preloaded.has(state)) {
-        const img = new Image();
-        img.src = this.getGifPath(state);
+        if (this.useWebm) {
+          const v = document.createElement('video');
+          v.preload = 'auto';
+          v.muted = true;
+          v.src = this.getWebmPath(state);
+          v.load();
+        } else {
+          const img = new Image();
+          img.src = this.getGifPath(state);
+        }
         this.preloaded.add(state);
       }
     });
@@ -122,9 +206,8 @@ const AnimationController = {
     // Preload the new state
     this.preloadStates([validState]);
 
-    // Get all character images (welcome + floating)
-    const welImg = document.getElementById('character-welcome-img');
-    const floatImg = document.getElementById('character-floating-img');
+    // Get all character media elements (welcome + floating)
+    const mediaEls = this.getCharacterMediaElements();
     const containers = document.querySelectorAll('.character-container');
     const expressionEls = document.querySelectorAll('.character-expression');
 
@@ -134,19 +217,16 @@ const AnimationController = {
     });
 
     // Crossfade out
-    [welImg, floatImg].forEach(img => {
-      if (img) img.classList.add('switching');
+    mediaEls.forEach(el => {
+      el.classList.add('switching');
     });
 
     await Utils.delay(300);
 
-    // Update source
-    const newSrc = this.getGifPath(validState);
-    [welImg, floatImg].forEach(img => {
-      if (img) {
-        img.src = newSrc;
-        img.classList.remove('switching');
-      }
+    // Update source (webm primary, gif fallback)
+    mediaEls.forEach(el => {
+      this.setMediaSource(el, validState);
+      el.classList.remove('switching');
     });
 
     // Add special CSS class if applicable

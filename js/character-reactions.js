@@ -83,6 +83,9 @@ const CharacterReactions = {
     const images = document.querySelectorAll(selector);
     
     images.forEach(img => {
+      if (img.dataset.reactionBound === 'true') return;
+      img.dataset.reactionBound = 'true';
+
       // Set cursor
       img.style.cursor = 'pointer';
       img.title = 'Click me!';
