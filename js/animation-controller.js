@@ -110,6 +110,16 @@ const AnimationController = {
     return img;
   },
 
+  fallbackVideoToPoster(el, state) {
+    if (!el || el.tagName !== 'VIDEO') return;
+    const poster = state ? `components/animation/${state}.gif` : 'components/animation/idle.gif';
+    el.pause?.();
+    el.removeAttribute('src');
+    el.load?.();
+    el.setAttribute('poster', poster);
+    el.classList.remove('switching');
+  },
+
   setMediaSource(el, state) {
     if (!el) return;
 
@@ -120,14 +130,19 @@ const AnimationController = {
       }
 
       const videoSrc = this.getWebmPath(state);
-      if (el.getAttribute('src') !== videoSrc) {
-        el.setAttribute('src', videoSrc);
-        el.load();
-      }
+      const onVideoError = () => {
+        el.removeEventListener('error', onVideoError);
+        this.fallbackVideoToPoster(el, state);
+      };
+
+      el.addEventListener('error', onVideoError, { once: true });
+      el.setAttribute('poster', `components/animation/${state}.gif`);
+      el.src = videoSrc;
+      el.load();
       const playPromise = el.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(() => {
-          this.replaceWithGifImage(el, state);
+          this.fallbackVideoToPoster(el, state);
         });
       }
       return;
