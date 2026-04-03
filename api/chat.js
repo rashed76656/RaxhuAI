@@ -1,6 +1,8 @@
-import fetch from 'node-fetch';
+function stripHtml(input) {
+  return String(input || '').replace(/<[^>]*>/g, '').trim();
+}
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -78,7 +80,15 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
 
     // Add conversation history if provided
     if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
-      messages.push(...conversationHistory);
+      messages.push(
+        ...conversationHistory
+          .filter((item) => item && typeof item.content === 'string' && (item.role === 'user' || item.role === 'assistant'))
+          .slice(-6)
+          .map((item) => ({
+            role: item.role,
+            content: stripHtml(item.content)
+          }))
+      );
     }
 
     // Add current user message
@@ -94,7 +104,7 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: messages,
         temperature: 0.8,
         max_tokens: 200,
@@ -103,7 +113,11 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const errorText = await response.text();
+      let error = errorText;
+      try {
+        error = JSON.parse(errorText);
+      } catch (_) {}
       console.error('OpenAI API Error:', error);
       return res.status(500).json({ error: 'Failed to get response from OpenAI', fallback: true });
     }
@@ -124,4 +138,4 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
       details: error.message
     });
   }
-}
+};
