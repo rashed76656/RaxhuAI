@@ -517,13 +517,8 @@ const ChatEngine = {
       }
     }
 
-    // Unknown command
-    AnimationController.setState('confused');
-    this.showTyping();
-    await Utils.delay(1000);
-    this.hideTyping();
-    await this.addBotMessage(Utils.randomFrom(Commands.unknown.responses));
-    AnimationController.setState('idle', { duration: 2000 });
+    // Unknown command → Try OpenAI or fallback to predefined
+    await this.handleUnknownInput(input);
   },
 
   // Handle a known command
@@ -636,5 +631,48 @@ const ChatEngine = {
         AnimationController.setState('idle');
       }
     }
+  },
+
+  // Handle unknown input with OpenAI API fallback to predefined responses
+  async handleUnknownInput(input) {
+    AnimationController.setState('confused');
+    this.showTyping();
+    await Utils.delay(1000);
+    this.hideTyping();
+
+    try {
+      // Try OpenAI API endpoint
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: input,
+          conversationHistory: this.messages.slice(-6).map(m => ({
+            role: m.type === 'user' ? 'user' : 'assistant',
+            content: m.text
+          }))
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.reply) {
+        // Success: Show AI-generated response with talking animation
+        AnimationController.setState('talking');
+        await this.addBotMessage(data.reply);
+      } else {
+        // API returned error or no reply, use fallback
+        throw new Error('API unavailable');
+      }
+    } catch (error) {
+      // Fallback: Use predefined unknown responses when API fails
+      console.warn('OpenAI API unavailable, using predefined fallback:', error.message);
+      AnimationController.setState('confused');
+      await this.addBotMessage(Utils.randomFrom(Commands.unknown.responses));
+    }
+
+    AnimationController.setState('idle', { duration: 2000 });
   }
 };
