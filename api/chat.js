@@ -118,7 +118,6 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
       try {
         error = JSON.parse(errorText);
       } catch (_) {}
-      console.error('OpenAI API Error:', error);
       return res.status(500).json({ error: 'Failed to get response from OpenAI', fallback: true });
     }
 
@@ -131,7 +130,6 @@ Conversational: "I'm interested in cybersecurity" → "Oh, you're a security ent
     });
 
   } catch (error) {
-    console.error('API Error:', error);
     return res.status(500).json({
       error: 'Failed to process request',
       fallback: true,

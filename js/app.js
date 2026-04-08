@@ -76,8 +76,6 @@ const App = {
       document.getElementById('chat-input')?.focus();
     }
 
-    console.log('%c🚀 RaxhuAI Portfolio loaded!', 'color: #6C63FF; font-size: 14px; font-weight: bold;');
-    console.log('%c💡 Try secret commands: sudo hire rashed, hack, konami, power up', 'color: #FF6B9D; font-size: 11px;');
   }
 };
 
@@ -88,7 +86,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       await LoaderManager.start();
     }
   } catch (err) {
-    console.warn('Loader failed, continuing app init:', err);
   }
 
   await App.init();

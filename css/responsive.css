@@ -25,7 +25,10 @@
   .mobile-header { display: flex; }
 
   .chat-area { padding: var(--space-3) var(--space-2); }
-  .input-area { padding: var(--space-3) var(--space-2) var(--space-4); }
+  .input-area {
+    padding: var(--space-3) var(--space-2) calc(var(--space-4) + env(safe-area-inset-bottom));
+    width: calc(100% - var(--space-4));
+  }
   .messages-container { max-width: 100%; padding-right: 0; }
 
   .welcome-state { padding: var(--space-4); }
@@ -39,8 +42,8 @@
   /* Floating character defaults for mobile if not dragged */
   .character-floating {
     top: auto;
-    bottom: 100px;
-    right: 15px;
+    bottom: 92px;
+    right: 10px;
     transform: none;
   }
   .character-floating .character-container { width: 210px; height: 210px; }
@@ -70,11 +73,27 @@
   .character-welcome .character-glow { width: 225px; height: 225px; }
 
   .chat-area { padding: var(--space-2) var(--space-3); }
-  .input-area { padding: var(--space-2) var(--space-3) var(--space-4); }
+  .input-area {
+    padding: var(--space-2) var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom));
+    width: calc(100% - var(--space-6));
+  }
 
-  .character-floating .character-container { width: 150px; height: 150px; }
-  .character-floating .character-img { width: 120px; height: 120px; }
-  .character-floating .character-glow { width: 143px; height: 143px; }
+  .character-floating {
+    right: 6px;
+    bottom: 84px;
+  }
+  .character-floating .character-container { width: 130px; height: 130px; }
+  .character-floating .character-img { width: 104px; height: 104px; }
+  .character-floating .character-glow { width: 123px; height: 123px; }
+
+  .input-container {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  }
+
+  .chat-input {
+    font-size: 0.95rem;
+  }
 
   .input-footer { display: none; }
 }

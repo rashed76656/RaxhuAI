@@ -497,11 +497,6 @@ const ChatEngine = {
       const ranked = CommandScorer.rankCommands(input, Commands);
       const best = ranked[0];
 
-      if (CommandScorer.shouldDebug() && ranked.length) {
-        const top = ranked.slice(0, 3).map(r => `${r.key}:${r.score.toFixed(1)}(${r.matchedKeyword || '-'})`).join(' | ');
-        console.log('%c[IntentRank]%c ' + top, 'color:#6C63FF;font-weight:700;', 'color:inherit;');
-      }
-
       if (best && best.score >= CommandScorer.threshold) {
         await this.handleCommand(best.key, best.cmd, input);
         return;
@@ -668,7 +663,6 @@ const ChatEngine = {
       }
     } catch (error) {
       // Fallback: Use predefined unknown responses when API fails
-      console.warn('OpenAI API unavailable, using predefined fallback:', error.message);
       AnimationController.setState('confused');
       await this.addBotMessage(Utils.randomFrom(Commands.unknown.responses));
     }

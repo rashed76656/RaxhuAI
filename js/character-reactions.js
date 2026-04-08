@@ -229,10 +229,6 @@ const CharacterReactions = {
        this.bubbleTimers.set(bubble, timer);
     });
     
-    // Only log clicks to console if it's not a hover
-    if (!isHover) {
-       console.log(`%c[Rashed AI]: %c${text}`, 'color: #6C63FF; font-weight: bold;', 'color: inherit;');
-    }
   },
 
   shakeScreen() {

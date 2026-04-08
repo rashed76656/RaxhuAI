@@ -47,4 +47,3 @@ while ((match = hiddenRegex.exec(md)) !== null) {
 jsOut += `  });\n}\n`;
 
 fs.writeFileSync('e:/Project/RaxhuAI/js/banglish-commands.js', jsOut);
-console.log("Successfully generated js/banglish-commands.js");

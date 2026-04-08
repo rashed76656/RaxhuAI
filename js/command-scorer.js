@@ -122,9 +122,5 @@ const CommandScorer = {
     });
 
     return ranked;
-  },
-
-  shouldDebug() {
-    return localStorage.getItem('raxhu_intent_debug') === 'true';
   }
 };

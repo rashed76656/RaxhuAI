@@ -498,6 +498,7 @@
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Command Suggestion Chips */
@@ -549,6 +550,9 @@
   border-radius: var(--radius-xl);
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-sm);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .input-container:focus-within {
@@ -558,6 +562,7 @@
 
 .chat-input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: none;
   outline: none;
@@ -577,6 +582,7 @@
 .send-btn {
   width: 40px;
   height: 40px;
+  flex: 0 0 40px;
   border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   color: white;
