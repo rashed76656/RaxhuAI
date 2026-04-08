@@ -18,7 +18,15 @@
     transform: translateX(-100%);
     z-index: 60;
     width: 280px;
+    height: 100dvh;
+    max-height: 100dvh;
     box-shadow: var(--shadow-xl);
+  }
+  .sidebar-content {
+    min-height: 0;
+  }
+  .sidebar-footer {
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   }
   .sidebar.open { transform: translateX(0); }
   .sidebar-close-btn { display: flex; }
